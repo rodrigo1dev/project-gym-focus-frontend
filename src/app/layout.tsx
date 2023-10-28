@@ -21,7 +21,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={roboto.className} >
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className={"bg-black-1 flex-col h-screen flex-grow flex items-center"}>
+
+          {children}
+
+        </div>
+      </body>
     </html>
   )
 }
