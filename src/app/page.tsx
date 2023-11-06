@@ -5,7 +5,8 @@ import { Lock, Mail } from "lucide-react";
 export default function Login() {
   return (
     <div>
-      <Logo />
+      <Logo variant="primary" />
+
 
       <p className={"text-gray-50 text-xl mt-52 text-center"}>Acesse sua conta</p>
 

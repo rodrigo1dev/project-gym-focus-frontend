@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={roboto.className} >
       <body className={inter.className}>
-        <div className={"bg-black-1 flex-col h-screen flex-grow flex items-center"}>
+        <div className={"bg-black-1 flex-col h-screen flex items-center"}>
 
           {children}
 

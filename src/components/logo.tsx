@@ -1,9 +1,29 @@
 import Image from "next/image";
-import logo from "../../assets/Vector.svg";
+import { ComponentProps } from "react";
+import { tv, VariantProps } from 'tailwind-variants';
+import logo from "../../assets/logo.svg";
 
-export function Logo() {
+const logoVariant = tv({
+    base: [
+        'flex justify-center',
+    ],
+
+    variants: {
+        variant: {
+            primary: 'mt-32',
+            secondary: 'mt-12',
+        },
+    },
+
+
+})
+
+export type LogoProps = ComponentProps<'div'> & VariantProps<typeof logoVariant>
+
+
+export function Logo({ variant }: LogoProps) {
     return (
-        <div className={"flex mt-32 justify-center"}>
+        <div className={logoVariant({ variant })}>
             <Image
                 src={logo}
                 className="w-10 h-10"
