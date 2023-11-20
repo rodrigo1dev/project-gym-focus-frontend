@@ -23,9 +23,7 @@ interface workoutsProps {
 
 export default function Home() {
   const divisions = ["A", "B", "C", "D", "E", "F", "G"];
-  const [dadosDoBackend, setDadosDoBackend] = useState<Array<workoutsProps>>(
-    []
-  );
+  const [workouts, setworkouts] = useState<Array<workoutsProps>>([]);
   const [division, setDivision] = useState("A");
 
   const fetchDataFromBackend = async () => {
@@ -49,7 +47,7 @@ export default function Home() {
 
       // Verifica se a resposta do backend é uma array antes de atualizar o estado
       if (Array.isArray(data)) {
-        setDadosDoBackend(data);
+        setworkouts(data);
       } else {
         console.error("A resposta do backend não é uma array:", data);
       }
@@ -97,13 +95,13 @@ export default function Home() {
         </thead>
 
         <div className="max-h-96 overflow-x-auto scrollbar-thin scrollbar-thumb-sky-1">
-          {dadosDoBackend.length === 0 ? (
+          {workouts.length === 0 ? (
             <p className=" px-2 py-3 text-center text-xs font-medium text-sky-1 uppercase tracking-wider w-full mt-48">
               Nenhum Exercício cadastrado
             </p>
           ) : (
             <tbody className="border-2">
-              {dadosDoBackend.map((item) => (
+              {workouts.map((item) => (
                 <tr key={item.id} className="bg-gray-1 h-16">
                   <td className=" mt-4  text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-2 pr-4 rounded-l-lg w-56 ">
                     {item.exerciseInfo.name}
