@@ -76,6 +76,7 @@ export default function Login() {
         className={
           "bg-transparent border border-sky-1 p-2 rounded-lg mt-8 w-96 h-14 text-sky-1"
         }
+        onClick={() => router.push("/create-account")}
       >
         Criar conta
       </button>
