@@ -5,25 +5,34 @@ import { Logo } from "@/components/logo";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
+interface ExerciseInfoProps {
+  id: string;
+  name: string;
+  grouping: string;
+}
+
 export default function CreateWorkout() {
   const [amountOfRepetitions, setAmountOfRepetitions] = useState("");
   const [amountOfSeries, setAmountOfSeries] = useState("");
   const [weight, setWeight] = useState("");
   const [exercise, setExercise] = useState("");
-  const [exerciseInfo, setExerciseInfo] = useState(null);
-  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [exerciseInfo, setExerciseInfo] = useState<ExerciseInfoProps[] | null>(
+    null
+  );
+  const [selectedExercise, setSelectedExercise] =
+    useState<ExerciseInfoProps | null>(null);
   const [division, setDivision] = useState("");
   const [showExerciseDropdown, setShowExerciseDropdown] = useState(false);
   const [showDivisionDropdown, setShowDivisionDropdown] = useState(false);
 
-  const handleExerciseSelection = (exercise) => {
+  const handleExerciseSelection = (exercise: ExerciseInfoProps | null) => {
     console.log(exercise);
     setSelectedExercise(exercise);
     setShowExerciseDropdown(false);
-    setExercise(exercise.name);
+    setExercise(exercise?.name || "");
   };
 
-  const handleDivisionSelection = (selectedDivision) => {
+  const handleDivisionSelection = (selectedDivision: string) => {
     setDivision(selectedDivision);
     setShowDivisionDropdown(false);
   };
@@ -32,7 +41,7 @@ export default function CreateWorkout() {
     const fetchExerciseInfo = async () => {
       try {
         const session = await getSession();
-        const token = session?.data.access_token;
+        const token = session as any;
 
         const response = await fetch(
           `http://localhost:3001/workouts/find-exercise-info-by-name?name=${exercise}`,
@@ -40,7 +49,7 @@ export default function CreateWorkout() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token.data.access_token}`,
             },
           }
         );
@@ -64,7 +73,7 @@ export default function CreateWorkout() {
   const handleSubmit = async () => {
     try {
       const session = await getSession();
-      const token = session?.data.access_token;
+      const token = session as any;
 
       const parsedRepetitions = parseInt(amountOfRepetitions, 10);
       const parsedSeries = parseInt(amountOfSeries, 10);
@@ -73,7 +82,7 @@ export default function CreateWorkout() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token.data.access_token}`,
         },
         body: JSON.stringify({
           amountOfRepetitions: parsedRepetitions,

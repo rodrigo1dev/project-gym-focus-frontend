@@ -8,6 +8,14 @@ import { useEffect, useState } from "react";
 import arrowLeft from "../../../../assets/arrowLeft.svg";
 import arrowRight from "../../../../assets/arrowRight.svg";
 
+interface SessionProps {
+  user_id: string;
+  data: {
+    access_token: string;
+    expires_in: number;
+    refresh_token: string;
+  };
+}
 interface workoutsProps {
   id: string;
   exerciseInfoId: string;
@@ -29,23 +37,21 @@ export default function Home() {
   const fetchDataFromBackend = async () => {
     try {
       const session = await getSession();
-      const token = session?.data.access_token;
-      console.log("token", session);
-
+      const token = session as any;
+      console.log(session);
       const response = await fetch(
         `http://localhost:3001/workouts/find-all-workouts-by-division?division=${division}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.data.access_token}`,
           },
         }
       );
 
       const data = await response.json();
 
-      // Verifica se a resposta do backend é uma array antes de atualizar o estado
       if (Array.isArray(data)) {
         setworkouts(data);
       } else {
