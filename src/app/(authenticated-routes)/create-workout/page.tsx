@@ -44,7 +44,7 @@ export default function CreateWorkout() {
         const token = session as any;
 
         const response = await fetch(
-          `http://localhost:3001/workouts/find-exercise-info-by-name?name=${exercise}`,
+          `${process.env.API_URL}/workouts/find-exercise-info-by-name?name=${exercise}`,
           {
             method: "GET",
             headers: {
@@ -78,7 +78,7 @@ export default function CreateWorkout() {
       const parsedRepetitions = parseInt(amountOfRepetitions, 10);
       const parsedSeries = parseInt(amountOfSeries, 10);
       const parsedWeight = parseInt(weight, 10);
-      const response = await fetch("http://localhost:3001/workouts/create", {
+      const response = await fetch(`${process.env.API_URL}/workouts/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -39,8 +39,9 @@ export default function Home() {
       const session = await getSession();
       const token = session as any;
       console.log(session);
+
       const response = await fetch(
-        `http://localhost:3001/workouts/find-all-workouts-by-division?division=${division}`,
+        `${process.env.API_URL}/workouts/find-all-workouts-by-division?division=${division}`,
         {
           method: "GET",
           headers: {

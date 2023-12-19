@@ -40,11 +40,11 @@ export default function CreateAccount() {
   };
 
   const handleEmailVerification = () => {
-    handleSubmit("http://localhost:3001/users/verify-email", { email });
+    handleSubmit(`${process.env.API_URL}/users/verify-email`, { email });
   };
 
   const handleCreateAccount = () => {
-    handleSubmit("http://localhost:3001/users/create", {
+    handleSubmit(`${process.env.API_URL}/users/create`, {
       email,
       name,
       password,
