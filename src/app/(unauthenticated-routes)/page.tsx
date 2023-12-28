@@ -2,10 +2,12 @@
 
 import * as Input from "@/components/input";
 import { Logo } from "@/components/logo";
+import { showToast } from "@/libs/toastify";
 import { Lock, Mail } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { SyntheticEvent, useState } from "react";
+import { ToastContainer } from "react-toastify";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -23,6 +25,7 @@ export default function Login() {
     });
 
     if (result?.error) {
+      showToast("Email ou senha incorreto", "error");
       console.log(result);
       return;
     }
@@ -79,6 +82,7 @@ export default function Login() {
         onClick={() => router.push("/create-account")}
       >
         Criar conta
+        <ToastContainer />
       </button>
     </div>
   );

@@ -2,8 +2,10 @@
 
 import { BottomBar } from "@/components/bottom-bar";
 import { Logo } from "@/components/logo";
+import { showToast } from "@/libs/toastify";
 import { getSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
 
 interface ExerciseInfoProps {
   id: string;
@@ -24,6 +26,22 @@ export default function CreateWorkout() {
   const [division, setDivision] = useState("");
   const [showExerciseDropdown, setShowExerciseDropdown] = useState(false);
   const [showDivisionDropdown, setShowDivisionDropdown] = useState(false);
+
+  const translateErrorMessage = (
+    originalMessages: string | string[]
+  ): string | string[] => {
+    const errorTranslations: { [key: string]: string } = {
+      "Workout with the same exerciseInfoId and division already exists":
+        "Este exercicio já existe na divisão selecionada",
+    };
+    if (Array.isArray(originalMessages)) {
+      return originalMessages.map(
+        (message) => errorTranslations[message] || message
+      );
+    } else {
+      return errorTranslations[originalMessages] || originalMessages;
+    }
+  };
 
   const handleExerciseSelection = (exercise: ExerciseInfoProps | null) => {
     console.log(exercise);
@@ -94,13 +112,14 @@ export default function CreateWorkout() {
       });
 
       if (response.ok) {
-        // Handle success
+        showToast("Exercício adicionado com sucesso", "success");
       } else {
-        const data = await response.json();
-        // Handle error
+        const responseData = await response.json();
+        const translatedMessage = translateErrorMessage(responseData.message);
+        showToast(`${translatedMessage}`, "error");
       }
     } catch (error) {
-      console.error("Erro ao criar exercício:", error);
+      console.error("Erro ao criar exercício:", "error");
     }
   };
 
@@ -222,6 +241,7 @@ export default function CreateWorkout() {
           onClick={handleSubmit}
         >
           Salvar
+          <ToastContainer />
         </button>
       </div>
       <BottomBar />

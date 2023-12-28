@@ -2,9 +2,11 @@
 
 import * as Input from "@/components/input";
 import { Logo } from "@/components/logo";
+import { showToast } from "@/libs/toastify";
 import { Asterisk, Lock, Mail } from "lucide-react";
 import { Person } from "phosphor-react";
 import { useState } from "react";
+import { ToastContainer } from "react-toastify";
 
 interface CreateAccountProps {
   email?: string;
@@ -20,7 +22,30 @@ export default function CreateAccount() {
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
 
-  const handleSubmit = async (url: string, requestBody: CreateAccountProps) => {
+  const translateErrorMessage = (
+    originalMessages: string | string[]
+  ): string | string[] => {
+    const errorTranslations: { [key: string]: string } = {
+      "email should not be empty": "O e-mail não deve estar vazio",
+      "email must be an email": "O e-mail deve ser válido",
+      "Email already in use": "O e-mail já esta em uso",
+      "password must be longer than or equal to 4 characters":
+        "A senha deve ter no mínimo 4 caracteres",
+    };
+    if (Array.isArray(originalMessages)) {
+      return originalMessages.map(
+        (message) => errorTranslations[message] || message
+      );
+    } else {
+      return errorTranslations[originalMessages] || originalMessages;
+    }
+  };
+
+  const handleSubmit = async (
+    url: string,
+    requestBody: CreateAccountProps,
+    message: string
+  ) => {
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -29,10 +54,15 @@ export default function CreateAccount() {
         },
         body: JSON.stringify(requestBody),
       });
+      console.log(response);
 
       if (response.ok) {
+        console.log(response);
+        showToast(`${message}`, "success");
       } else {
-        const data = await response.json();
+        const responseData = await response.json();
+        const translatedMessage = translateErrorMessage(responseData.message);
+        showToast(`${translatedMessage}`, "error");
       }
     } catch (error) {
       console.error("Erro ao criar conta:", error);
@@ -40,16 +70,24 @@ export default function CreateAccount() {
   };
 
   const handleEmailVerification = () => {
-    handleSubmit(`${process.env.API_URL}/users/verify-email`, { email });
+    handleSubmit(
+      `${process.env.API_URL}/users/verify-email`,
+      { email },
+      "Email enviado com sucesso!"
+    );
   };
 
   const handleCreateAccount = () => {
-    handleSubmit(`${process.env.API_URL}/users/create`, {
-      email,
-      name,
-      password,
-      code,
-    });
+    handleSubmit(
+      `${process.env.API_URL}/users/create`,
+      {
+        email,
+        name,
+        password,
+        code,
+      },
+      "Conta criada com sucesso!"
+    );
   };
 
   return (
@@ -76,6 +114,7 @@ export default function CreateAccount() {
             onClick={handleEmailVerification}
           >
             Verificar
+            <ToastContainer />
           </button>
         </Input.Root>
 
@@ -135,6 +174,7 @@ export default function CreateAccount() {
         onClick={handleCreateAccount}
       >
         Criar conta
+        <ToastContainer />
       </button>
     </div>
   );
