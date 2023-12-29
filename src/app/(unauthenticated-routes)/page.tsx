@@ -25,7 +25,7 @@ export default function Login() {
     });
 
     if (result?.error) {
-      showToast("Email ou senha incorreto", "error");
+      showToast("Email ou senha incorreta", "error");
       console.log(result);
       return;
     }

@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Person } from "phosphor-react";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
+import * as yup from "yup";
 
 interface CreateAccountProps {
   email?: string;
@@ -23,6 +24,18 @@ export default function CreateAccount() {
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const router = useRouter();
+
+  const validationSchema = yup.object().shape({
+    name: yup.string().required("O nome é obrigatório"),
+    password: yup
+      .string()
+      .min(4, "A senha deve ter no mínimo 4 caracteres")
+      .required("A senha é obrigatória"),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "As senhas devem coincidir")
+      .required("Confirmação de senha é obrigatória"),
+  });
 
   const translateErrorMessage = (
     originalMessages: string | string[]
@@ -85,18 +98,32 @@ export default function CreateAccount() {
     );
   };
 
-  const handleCreateAccount = () => {
-    handleSubmit(
-      `${process.env.API_URL}/users/create`,
-      {
-        email,
-        name,
-        password,
-        code,
-      },
-      "Conta criada com sucesso!",
-      true
-    );
+  const handleCreateAccount = async () => {
+    try {
+      await validationSchema.validate(
+        { email, name, password, confirmPassword, code },
+        { abortEarly: false }
+      );
+      handleSubmit(
+        `${process.env.API_URL}/users/create`,
+        { email, name, password, code },
+        "Conta criada com sucesso!",
+        true
+      );
+    } catch (error) {
+      const validationErrors: Record<string, string> = {};
+
+      if (error instanceof yup.ValidationError) {
+        error.inner.forEach((e) => {
+          const path = e.path || "nonFieldError";
+          validationErrors[path] = e.message;
+        });
+      }
+
+      const errorMessage = Object.values(validationErrors).join(", ");
+
+      showToast(errorMessage, "error");
+    }
   };
 
   const handleClick = () => {
@@ -164,7 +191,7 @@ export default function CreateAccount() {
           </Input.Prefix>
           <Input.Control
             id="confirm-password"
-            type="confirm-password"
+            type="password"
             placeholder="Confirme a senha"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
