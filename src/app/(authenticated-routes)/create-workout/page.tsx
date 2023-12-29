@@ -7,6 +7,7 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import * as yup from "yup";
 
 interface ExerciseInfoProps {
   id: string;
@@ -28,6 +29,28 @@ export default function CreateWorkout() {
   const [showExerciseDropdown, setShowExerciseDropdown] = useState(false);
   const [showDivisionDropdown, setShowDivisionDropdown] = useState(false);
   const router = useRouter();
+
+  const validationSchema = yup.object().shape({
+    amountOfRepetitions: yup
+      .number()
+      .typeError("A quantidade de repetições deve ser um número")
+      .integer("A quantidade de repetições deve ser um número inteiro")
+      .min(1, "A quantidade de repetições deve ser no mínimo 1")
+      .required("A quantidade de repetições é obrigatória"),
+
+    amountOfSeries: yup
+      .number()
+      .typeError("A quantidade de séries deve ser um número")
+      .integer("A quantidade de séries deve ser um número inteiro")
+      .min(1, "A quantidade de séries deve ser no mínimo 1")
+      .required("A quantidade de séries é obrigatória"),
+
+    weight: yup
+      .number()
+      .typeError("O peso deve ser um número")
+      .min(1, "O peso deve ser no mínimo 1")
+      .required("O peso é obrigatório"),
+  });
 
   const translateErrorMessage = (
     originalMessages: string | string[]
@@ -92,6 +115,17 @@ export default function CreateWorkout() {
 
   const handleSubmit = async () => {
     try {
+      await validationSchema.validate(
+        {
+          amountOfRepetitions,
+          amountOfSeries,
+          weight,
+          exerciseInfoId: selectedExercise?.id,
+          division,
+        },
+        { abortEarly: false }
+      );
+
       const session = await getSession();
       const token = session as any;
 
@@ -121,7 +155,17 @@ export default function CreateWorkout() {
         showToast(`${translatedMessage}`, "error");
       }
     } catch (error) {
-      console.error("Erro ao criar exercício:", "error");
+      const validationErrors: Record<string, string> = {};
+
+      if (error instanceof yup.ValidationError) {
+        error.inner.forEach((e) => {
+          const path = e.path || "nonFieldError";
+          validationErrors[path] = e.message;
+        });
+      }
+      const errorMessage = Object.values(validationErrors).join(", ");
+
+      showToast(errorMessage, "error");
     }
   };
   const handleClick = () => {
@@ -211,6 +255,7 @@ export default function CreateWorkout() {
               <div className="relative">
                 <input
                   className="w-full h-11 px-3 bg-gray-1 text-gray-500 rounded focus:outline-none focus:bg-gray-2 text-center appearance-none"
+                  type="text"
                   value={division}
                   onChange={(e) => setDivision(e.target.value)}
                   onClick={() => setShowDivisionDropdown(true)}
