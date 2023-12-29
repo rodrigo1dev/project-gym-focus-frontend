@@ -4,6 +4,7 @@ import * as Input from "@/components/input";
 import { Logo } from "@/components/logo";
 import { showToast } from "@/libs/toastify";
 import { Asterisk, Lock, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Person } from "phosphor-react";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -21,6 +22,7 @@ export default function CreateAccount() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
+  const router = useRouter();
 
   const translateErrorMessage = (
     originalMessages: string | string[]
@@ -57,7 +59,6 @@ export default function CreateAccount() {
       console.log(response);
 
       if (response.ok) {
-        console.log(response);
         showToast(`${message}`, "success");
       } else {
         const responseData = await response.json();
@@ -88,11 +89,20 @@ export default function CreateAccount() {
       },
       "Conta criada com sucesso!"
     );
+    setTimeout(() => {
+      router.push("/");
+    }, 4000);
+  };
+
+  const handleClick = () => {
+    router.push("/");
   };
 
   return (
     <div>
-      <Logo variant="primary" />
+      <button onClick={handleClick} className="w-full">
+        <Logo variant="primary" />
+      </button>
 
       <p className={"text-gray-50 text-xl mt-20 text-center"}>Crie sua conta</p>
 

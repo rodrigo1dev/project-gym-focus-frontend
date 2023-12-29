@@ -4,6 +4,7 @@ import { BottomBar } from "@/components/bottom-bar";
 import { Logo } from "@/components/logo";
 import { showToast } from "@/libs/toastify";
 import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 
@@ -26,6 +27,7 @@ export default function CreateWorkout() {
   const [division, setDivision] = useState("");
   const [showExerciseDropdown, setShowExerciseDropdown] = useState(false);
   const [showDivisionDropdown, setShowDivisionDropdown] = useState(false);
+  const router = useRouter();
 
   const translateErrorMessage = (
     originalMessages: string | string[]
@@ -122,11 +124,14 @@ export default function CreateWorkout() {
       console.error("Erro ao criar exercício:", "error");
     }
   };
-
+  const handleClick = () => {
+    router.push("/");
+  };
   return (
     <div>
-      <Logo variant="primary" />
-
+      <button onClick={handleClick} className="w-full">
+        <Logo variant="primary" />
+      </button>
       <div className="flex justify-center">
         <form className="w-4/5 mt-40 ">
           <div className="flex -mx-3">
