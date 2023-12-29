@@ -33,6 +33,7 @@ export default function CreateAccount() {
       "Email already in use": "O e-mail já esta em uso",
       "password must be longer than or equal to 4 characters":
         "A senha deve ter no mínimo 4 caracteres",
+      "Invalid code": "Código inválido",
     };
     if (Array.isArray(originalMessages)) {
       return originalMessages.map(
@@ -46,7 +47,8 @@ export default function CreateAccount() {
   const handleSubmit = async (
     url: string,
     requestBody: CreateAccountProps,
-    message: string
+    message: string,
+    createAccount?: boolean
   ) => {
     try {
       const response = await fetch(url, {
@@ -60,6 +62,11 @@ export default function CreateAccount() {
 
       if (response.ok) {
         showToast(`${message}`, "success");
+      }
+      if (createAccount === true && response.ok) {
+        setTimeout(() => {
+          router.push("/");
+        }, 4000);
       } else {
         const responseData = await response.json();
         const translatedMessage = translateErrorMessage(responseData.message);
@@ -87,11 +94,9 @@ export default function CreateAccount() {
         password,
         code,
       },
-      "Conta criada com sucesso!"
+      "Conta criada com sucesso!",
+      true
     );
-    setTimeout(() => {
-      router.push("/");
-    }, 4000);
   };
 
   const handleClick = () => {
