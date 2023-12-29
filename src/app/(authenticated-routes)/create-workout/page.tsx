@@ -211,10 +211,10 @@ export default function CreateWorkout() {
               <div className="relative">
                 <input
                   className="w-full h-11 px-3 bg-gray-1 text-gray-500 rounded focus:outline-none focus:bg-gray-2 text-center appearance-none"
-                  type="text"
                   value={division}
                   onChange={(e) => setDivision(e.target.value)}
                   onClick={() => setShowDivisionDropdown(true)}
+                  readOnly
                 />
                 {showDivisionDropdown && (
                   <div className="absolute top-10 left-0 w-full max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-sky-1 bg-white border border-gray-300 rounded-md ">
